@@ -1,8 +1,8 @@
 // ======================
 // CONFIG – fill these two in
 // ======================
-const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+const SUPABASE_URL = 'https://gmncuelonmicdbpuacqi.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_u09NHV7z9E-2CJ0tvQ8IvQ_xcSXfs0F';
 
 // ======================
 // Mobile menu
