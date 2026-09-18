@@ -905,3 +905,18 @@ ul {
   margin-top: 22px;
   color: var(--text-muted);
 }
+
+
+.dev-tab {
+  font-weight: 700;
+  color: #55e7ff;
+  padding: 8px 14px;
+  border: 1px solid rgba(85, 231, 255, 0.35);
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.dev-tab:hover {
+  color: #fff;
+  background: rgba(85, 231, 255, 0.12);
+}
