@@ -1,8 +1,8 @@
 // ======================
 // CONFIG – keep your real Supabase values here
 // ======================
-const SUPABASE_URL = 'https://gmncuelonmicdbpuacqi.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_u09NHV7z9E-2CJ0tvQ8IvQ_xcSXfs0F';
+const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
 
 const headers = (token = SUPABASE_ANON_KEY) => ({
   'Content-Type': 'application/json',
@@ -189,16 +189,37 @@ function saveSession(data) {
 }
 
 async function loadProfile() {
-  if (!currentSession?.access_token || !currentSession.user?.id) {
+  if (!currentSession?.access_token) {
     updateStaffUI();
     return;
   }
 
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentSession.user.id}&select=*`,
+  if (!currentSession.user?.id) {
+    const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: headers(currentSession.access_token)
+    });
+    if (userRes.ok) currentSession.user = await userRes.json();
+  }
+
+  if (!currentSession.user?.id) {
+    updateStaffUI();
+    return;
+  }
+
+  const userId = currentSession.user.id;
+  const email = (currentSession.user.email || '').toLowerCase();
+  let res = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=id,email,role`,
     { headers: headers(currentSession.access_token) }
   );
-  const rows = await res.json();
+  let rows = await res.json();
+  if (!Array.isArray(rows) || !rows[0]) {
+    res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email,role`,
+      { headers: headers(currentSession.access_token) }
+    );
+    rows = await res.json();
+  }
   currentProfile = Array.isArray(rows) ? rows[0] : null;
   updateStaffUI();
   if (document.getElementById('accountsBody')) loadAccounts();
