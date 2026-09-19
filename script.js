@@ -1,8 +1,8 @@
 // ======================
 // CONFIG – keep your real Supabase values here
 // ======================
-const SUPABASE_URL = 'https://gmncuelonmicdbpuacqi.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_u09NHV7z9E-2CJ0tvQ8IvQ_xcSXfs0F';
+const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
 
 const headers = (token = SUPABASE_ANON_KEY) => ({
   'Content-Type': 'application/json',
@@ -251,7 +251,7 @@ function updateStaffUI() {
     el.textContent = initial;
   });
 
-  const allowed = Boolean(currentProfile && currentProfile.role && currentProfile.role !== 'member' && currentProfile.role !== 'pending');
+  const allowed = Boolean(currentProfile && ['owner', 'dev', 'tester'].includes(String(currentProfile.role).toLowerCase()));
   if (staffNavLink) staffNavLink.hidden = !allowed;
   if (staffSection) staffSection.hidden = !allowed;
 
