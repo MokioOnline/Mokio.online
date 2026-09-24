@@ -59,34 +59,58 @@
     </div>
   </section>
 
-  <div class="modal" id="authModal" hidden>
+    <div class="modal" id="authModal" hidden>
     <div class="modal-card auth-card">
       <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
+
       <div id="authGuest">
         <div class="auth-brand">
           <img src="../images/logo.svg" alt="" class="auth-logo">
           <h2 id="authTitle">Welcome back</h2>
           <p class="auth-sub" id="authSub">Sign in to your Mokio account.</p>
         </div>
+
         <div class="auth-tabs">
           <button type="button" class="auth-tab active" data-mode="signin">Sign in</button>
           <button type="button" class="auth-tab" data-mode="signup">Create account</button>
         </div>
+
         <form id="authForm">
-          <label>Email<input type="email" name="email" placeholder="you@email.com" required></label>
-          <label>Password<input type="password" name="password" placeholder="••••••••" minlength="6" required></label>
+          <label id="usernameField" hidden>
+            <span class="field-label">Username</span>
+            <input type="text" name="username" placeholder="mokio" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}">
+          </label>
+          <label id="loginIdField">
+            <span class="field-label">Email or username</span>
+            <input type="text" name="email" placeholder="email or username" required>
+          </label>
+          <label>
+            <span class="field-label">Password</span>
+            <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+          </label>
           <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
         </form>
         <p class="form-note auth-note" id="authNote"></p>
       </div>
+
       <div id="authSignedIn" hidden>
         <div class="auth-brand">
           <div class="auth-avatar" id="authAvatar">M</div>
-          <h2>Account</h2>
+          <h2 id="authUserName">Account</h2>
           <p class="auth-sub" id="authUserEmail"></p>
           <span class="role-badge" id="authUserRole">member</span>
         </div>
-        <button type="button" class="text-link" id="authSignOutLink">Sign out of this device</button>
+        <div class="account-panel">
+          <label class="account-field">
+            <span class="field-label">Username</span>
+            <div class="username-row">
+              <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+              <button type="button" class="btn btn-small btn-primary" id="saveUsernameBtn">Save</button>
+            </div>
+          </label>
+          <p class="form-note" id="usernameNote"></p>
+          <button type="button" class="btn btn-secondary auth-signout" id="authSignOutLink">Sign out</button>
+        </div>
       </div>
     </div>
   </div>

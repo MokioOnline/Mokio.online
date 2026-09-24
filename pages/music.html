@@ -24,6 +24,12 @@
         <a href="messaging.html">Messaging</a>
         <a href="../index.html#waitlist" class="btn btn-small">Join Waitlist</a>
       </nav>
+      <div class="nav-right">
+        <button type="button" class="account-btn" id="accountBtn">
+          <span class="account-btn-icon">M</span>
+          <span id="accountBtnText">Sign In</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -77,12 +83,62 @@
       <h2>More information</h2>
       <div class="extra-info-copy">
         <p>Mokio Wave looks like a regular music app, but it is so much more. It introduces innovative software built specifically for you to create music directly within the app. Using the built-in editing panel, you can cut and clip your favorite tracks, then save them locally to your private library or publish them directly for the world to hear. Mokio Wave is a true all-in-one ecosystem designed for users to share, create, and earn. With just a few clicks, you will find yourself in a studio ready to build any song you can imagine.</p>
-        <p></p>
-        <p></p>
-        <p></p>
       </div>
     </div>
   </section>
+
+
+  <div class="modal" id="authModal" hidden>
+    <div class="modal-card auth-card">
+      <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
+      <div id="authGuest">
+        <div class="auth-brand">
+          <img src="../images/logo.svg" alt="" class="auth-logo">
+          <h2 id="authTitle">Welcome back</h2>
+          <p class="auth-sub" id="authSub">Sign in to your Mokio account.</p>
+        </div>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" data-mode="signup">Create account</button>
+        </div>
+        <form id="authForm">
+          <label id="usernameField" hidden>
+            <span class="field-label">Username</span>
+            <input type="text" name="username" placeholder="mokio" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}">
+          </label>
+          <label id="loginIdField">
+            <span class="field-label">Email or username</span>
+            <input type="text" name="email" placeholder="email or username" required>
+          </label>
+          <label>
+            <span class="field-label">Password</span>
+            <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+          </label>
+          <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
+        </form>
+        <p class="form-note auth-note" id="authNote"></p>
+      </div>
+      <div id="authSignedIn" hidden>
+        <div class="auth-brand">
+          <div class="auth-avatar" id="authAvatar">M</div>
+          <h2 id="authUserName">Account</h2>
+          <p class="auth-sub" id="authUserEmail"></p>
+          <span class="role-badge" id="authUserRole">member</span>
+        </div>
+        <div class="account-panel">
+          <label class="account-field">
+            <span class="field-label">Username</span>
+            <div class="username-row">
+              <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+              <button type="button" class="btn btn-small btn-primary" id="saveUsernameBtn">Save</button>
+            </div>
+          </label>
+          <p class="form-note" id="usernameNote"></p>
+          <button type="button" class="btn btn-secondary auth-signout" id="authSignOutLink">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container footer-inner">
@@ -106,5 +162,6 @@
       </div>
     </div>
   </footer>
+  <script src="../script.js"></script>
 </body>
 </html>

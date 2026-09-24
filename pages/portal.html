@@ -63,7 +63,7 @@
     </div>
   </section>
 
-  <div class="modal" id="authModal" hidden>
+    <div class="modal" id="authModal" hidden>
     <div class="modal-card auth-card">
       <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
 
@@ -80,12 +80,16 @@
         </div>
 
         <form id="authForm">
-          <label>
-            Email
-            <input type="email" name="email" placeholder="you@email.com" required>
+          <label id="usernameField" hidden>
+            <span class="field-label">Username</span>
+            <input type="text" name="username" placeholder="mokio" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}">
+          </label>
+          <label id="loginIdField">
+            <span class="field-label">Email or username</span>
+            <input type="text" name="email" placeholder="email or username" required>
           </label>
           <label>
-            Password
+            <span class="field-label">Password</span>
             <input type="password" name="password" placeholder="••••••••" minlength="6" required>
           </label>
           <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
@@ -96,11 +100,21 @@
       <div id="authSignedIn" hidden>
         <div class="auth-brand">
           <div class="auth-avatar" id="authAvatar">M</div>
-          <h2>Account</h2>
+          <h2 id="authUserName">Account</h2>
           <p class="auth-sub" id="authUserEmail"></p>
           <span class="role-badge" id="authUserRole">member</span>
         </div>
-        <button type="button" class="text-link" id="authSignOutLink">Sign out of this device</button>
+        <div class="account-panel">
+          <label class="account-field">
+            <span class="field-label">Username</span>
+            <div class="username-row">
+              <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+              <button type="button" class="btn btn-small btn-primary" id="saveUsernameBtn">Save</button>
+            </div>
+          </label>
+          <p class="form-note" id="usernameNote"></p>
+          <button type="button" class="btn btn-secondary auth-signout" id="authSignOutLink">Sign out</button>
+        </div>
       </div>
     </div>
   </div>
