@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tester — Mokio</title>
+  <title>Staff Portal — Mokio</title>
   <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,12 +19,13 @@
       </a>
       <nav class="nav-links">
         <a href="../index.html">Home</a>
-        <a href="portal.html" class="dev-tab">Portal</a>
+        <a href="../index.html#features">Features</a>
+        <a href="../index.html#waitlist">Waitlist</a>
       </nav>
       <div class="nav-right">
         <button type="button" class="account-btn" id="accountBtn">
           <span class="account-btn-icon">M</span>
-          <span id="accountBtnText">Account</span>
+          <span id="accountBtnText">Sign In</span>
         </button>
         <button class="mobile-menu-btn" aria-label="Toggle menu">
           <span></span><span></span><span></span>
@@ -33,16 +34,31 @@
     </div>
   </header>
 
-  <section class="staff">
+  <section id="staff" class="staff">
     <div class="container">
       <div class="section-header">
-        <h2>Tester area</h2>
-        <p>Only Tester and Owner can see this page. Build your tester pages here.</p>
+        <h2>Staff portal</h2>
+        <p id="staffWelcome">Sign in to open the pages for your role.</p>
       </div>
-      <div class="staff-card">
-        <div class="role-badge tester">Tester</div>
-        <h3>Your content goes here</h3>
-        <p>Edit <code>pages/tester.html</code> and add the site features you want testers to use.</p>
+
+      <div class="staff-grid">
+        <a class="staff-card" href="owner.html" data-roles="owner" hidden>
+          <div class="role-badge owner">Owner</div>
+          <h3>Owner area</h3>
+          <p>Accounts, roles, and tools only you can open.</p>
+        </a>
+
+        <a class="staff-card" href="mod.html" data-roles="owner,mod" hidden>
+          <div class="role-badge mod">Mod</div>
+          <h3>Mod area</h3>
+          <p>Moderator tools and pages. Owner can also open this.</p>
+        </a>
+
+        <a class="staff-card" href="tester.html" data-roles="owner,tester" hidden>
+          <div class="role-badge tester">Tester</div>
+          <h3>Tester area</h3>
+          <p>Tester tools and pages. Owner can also open this.</p>
+        </a>
       </div>
     </div>
   </section>
@@ -50,23 +66,33 @@
   <div class="modal" id="authModal" hidden>
     <div class="modal-card auth-card">
       <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
+
       <div id="authGuest">
         <div class="auth-brand">
           <img src="../images/logo.svg" alt="" class="auth-logo">
           <h2 id="authTitle">Welcome back</h2>
           <p class="auth-sub" id="authSub">Sign in to your Mokio account.</p>
         </div>
+
         <div class="auth-tabs">
           <button type="button" class="auth-tab active" data-mode="signin">Sign in</button>
           <button type="button" class="auth-tab" data-mode="signup">Create account</button>
         </div>
+
         <form id="authForm">
-          <label>Email<input type="email" name="email" placeholder="you@email.com" required></label>
-          <label>Password<input type="password" name="password" placeholder="••••••••" minlength="6" required></label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@email.com" required>
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+          </label>
           <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
         </form>
         <p class="form-note auth-note" id="authNote"></p>
       </div>
+
       <div id="authSignedIn" hidden>
         <div class="auth-brand">
           <div class="auth-avatar" id="authAvatar">M</div>
@@ -80,7 +106,7 @@
   </div>
 
   <script>
-    window.MOKIO_REQUIRED_ROLES = ['owner', 'tester'];
+    window.MOKIO_REQUIRED_ROLES = ['owner', 'mod', 'tester'];
   </script>
   <script src="../script.js"></script>
 </body>

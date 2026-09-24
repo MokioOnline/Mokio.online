@@ -251,7 +251,7 @@ function updateStaffUI() {
     el.textContent = initial;
   });
 
-  const allowed = Boolean(currentProfile && ['owner', 'dev', 'tester'].includes(String(currentProfile.role).toLowerCase()));
+  const allowed = Boolean(currentProfile && ['owner', 'mod', 'tester'].includes(String(currentProfile.role).toLowerCase()));
   if (staffNavLink) staffNavLink.hidden = !allowed;
   if (staffSection) staffSection.hidden = !allowed;
 

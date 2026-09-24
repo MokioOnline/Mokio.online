@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Owner — Mokio</title>
   <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
@@ -16,9 +19,17 @@
       </a>
       <nav class="nav-links">
         <a href="../index.html">Home</a>
-        <a href="../index.html#staff" class="dev-tab">Dev</a>
-        <a href="../index.html" class="account-btn"><span class="account-btn-icon">M</span><span>Account</span></a>
+        <a href="portal.html" class="dev-tab">Portal</a>
       </nav>
+      <div class="nav-right">
+        <button type="button" class="account-btn" id="accountBtn">
+          <span class="account-btn-icon">M</span>
+          <span id="accountBtnText">Account</span>
+        </button>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -47,10 +58,41 @@
     </div>
   </section>
 
-  <script src="../script.js"></script>
+  <div class="modal" id="authModal" hidden>
+    <div class="modal-card auth-card">
+      <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
+      <div id="authGuest">
+        <div class="auth-brand">
+          <img src="../images/logo.svg" alt="" class="auth-logo">
+          <h2 id="authTitle">Welcome back</h2>
+          <p class="auth-sub" id="authSub">Sign in to your Mokio account.</p>
+        </div>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" data-mode="signup">Create account</button>
+        </div>
+        <form id="authForm">
+          <label>Email<input type="email" name="email" placeholder="you@email.com" required></label>
+          <label>Password<input type="password" name="password" placeholder="••••••••" minlength="6" required></label>
+          <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
+        </form>
+        <p class="form-note auth-note" id="authNote"></p>
+      </div>
+      <div id="authSignedIn" hidden>
+        <div class="auth-brand">
+          <div class="auth-avatar" id="authAvatar">M</div>
+          <h2>Account</h2>
+          <p class="auth-sub" id="authUserEmail"></p>
+          <span class="role-badge" id="authUserRole">member</span>
+        </div>
+        <button type="button" class="text-link" id="authSignOutLink">Sign out of this device</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // This page is locked to owner only
     window.MOKIO_REQUIRED_ROLES = ['owner'];
   </script>
+  <script src="../script.js"></script>
 </body>
 </html>

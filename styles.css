@@ -575,6 +575,13 @@ ul {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px;
+  display: block;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+a.staff-card:hover {
+  border-color: rgba(125, 140, 255, 0.35);
+  transform: translateY(-4px);
 }
 
 .role-badge {
