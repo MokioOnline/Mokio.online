@@ -121,23 +121,84 @@ function setAuthMode(mode) {
     ? 'Sign in to your Mokio account.'
     : 'Anyone can join. Passwords stay private.';
   if (authSubmit) authSubmit.textContent = mode === 'signin' ? 'Sign In' : 'Create account';
+  const usernameField = document.getElementById('usernameField');
+  const loginIdField = document.getElementById('loginIdField');
+  if (usernameField) usernameField.hidden = mode !== 'signup';
+  if (loginIdField) {
+    const labelText = loginIdField.childNodes[0];
+    const input = loginIdField.querySelector('input');
+    if (mode === 'signup') {
+      loginIdField.childNodes[0].textContent = '\n            Email\n            ';
+      if (input) {
+        input.type = 'email';
+        input.placeholder = 'you@email.com';
+      }
+    } else {
+      loginIdField.childNodes[0].textContent = '\n            Email or username\n            ';
+      if (input) {
+        input.type = 'text';
+        input.placeholder = 'email or username';
+      }
+    }
+  }
+}
+
+async function emailFromUsername(username) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/email_for_username`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify({ uname: username })
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (typeof data === 'string' && data.includes('@')) return data.toLowerCase();
+  return null;
 }
 
 authForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = authForm.email.value.trim().toLowerCase();
   const password = authForm.password.value;
+  const username = (authForm.username?.value || '').trim().toLowerCase();
   authNote.textContent = 'Working...';
 
   try {
     if (authMode === 'signup') {
+      if (!email.includes('@')) {
+        throw new Error('Use a real email when creating an account.');
+      }
+      if (!/^[a-z0-9._-]{3,20}$/.test(username)) {
+        throw new Error('Username must be 3-20 characters: letters, numbers, . _ -');
+      }
+      const takenRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/username_taken`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ uname: username })
+      });
+      if (takenRes.ok && (await takenRes.json()) === true) {
+        throw new Error('That username is already taken.');
+      }
       const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
         method: 'POST',
         headers: headers(),
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, data: { username } })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error_description || data.msg || data.message || 'Sign up failed');
+      const token = data.access_token || data.session?.access_token;
+      const userId = data.user?.id || data.id;
+      if (token && userId) {
+        const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
+          method: 'PATCH',
+          headers: { ...headers(token), Prefer: 'return=minimal' },
+          body: JSON.stringify({ username, email })
+        });
+        if (!patchRes.ok) {
+          authNote.textContent = 'Account created, but username may need the SQL fix below. You can still sign in.';
+          setAuthMode('signin');
+          return;
+        }
+      }
       authNote.textContent = 'Account created. You can sign in now.';
       setAuthMode('signin');
       document.querySelectorAll('.auth-tab').forEach((t) => {
@@ -146,10 +207,16 @@ authForm?.addEventListener('submit', async (e) => {
       return;
     }
 
+    let loginEmail = email;
+    if (!loginEmail.includes('@')) {
+      loginEmail = await emailFromUsername(loginEmail);
+      if (!loginEmail) throw new Error('No account found with that username.');
+    }
+
     const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method: 'POST',
       headers: headers(),
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email: loginEmail, password })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error_description || data.msg || data.error || 'Sign in failed');
@@ -160,6 +227,33 @@ authForm?.addEventListener('submit', async (e) => {
   } catch (err) {
     authNote.textContent = err.message;
   }
+});
+
+document.getElementById('saveUsernameBtn')?.addEventListener('click', async () => {
+  const note = document.getElementById('usernameNote');
+  const value = (document.getElementById('usernameEdit')?.value || '').trim().toLowerCase();
+  if (!currentSession?.access_token || !currentSession.user?.id) {
+    if (note) note.textContent = 'Sign in first.';
+    return;
+  }
+  if (!/^[a-z0-9._-]{3,20}$/.test(value)) {
+    if (note) note.textContent = 'Use 3-20 characters: letters, numbers, . _ -';
+    return;
+  }
+  if (note) note.textContent = 'Saving...';
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentSession.user.id}`, {
+    method: 'PATCH',
+    headers: { ...headers(currentSession.access_token), Prefer: 'return=minimal' },
+    body: JSON.stringify({ username: value })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (note) note.textContent = err.message || 'Could not save username. It may already be taken.';
+    return;
+  }
+  if (currentProfile) currentProfile.username = value;
+  updateStaffUI();
+  if (note) note.textContent = 'Username saved.';
 });
 
 document.getElementById('authSignOutLink')?.addEventListener('click', async () => {
@@ -209,13 +303,13 @@ async function loadProfile() {
   const userId = currentSession.user.id;
   const email = (currentSession.user.email || '').toLowerCase();
   let res = await fetch(
-    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=id,email,role`,
+    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=id,email,role,username`,
     { headers: headers(currentSession.access_token) }
   );
   let rows = await res.json();
   if (!Array.isArray(rows) || !rows[0]) {
     res = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email,role`,
+      `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email,role,username`,
       { headers: headers(currentSession.access_token) }
     );
     rows = await res.json();
@@ -240,13 +334,20 @@ function updateStaffUI() {
   if (btnText) btnText.textContent = signedIn ? 'Account' : 'Sign In';
   if (authGuest) authGuest.hidden = signedIn;
   if (authSignedIn) authSignedIn.hidden = !signedIn;
+  const username = currentProfile?.username || '';
+  if (document.getElementById('authUserName')) {
+    document.getElementById('authUserName').textContent = username ? '@' + username : email;
+  }
+  if (document.getElementById('usernameEdit') && username) {
+    document.getElementById('usernameEdit').value = username;
+  }
   if (document.getElementById('authUserEmail')) {
-    document.getElementById('authUserEmail').textContent = email;
+    document.getElementById('authUserEmail').hidden = true;
   }
   if (document.getElementById('authUserRole')) {
     document.getElementById('authUserRole').textContent = currentProfile?.role || 'member';
   }
-  const initial = (email[0] || 'M').toUpperCase();
+  const initial = ((username || email)[0] || 'M').toUpperCase();
   document.querySelectorAll('.account-btn-icon, #authAvatar').forEach((el) => {
     el.textContent = initial;
   });
@@ -281,7 +382,7 @@ async function loadAccounts() {
   if (!body || !hasRole('owner')) return;
 
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/profiles?select=email,role,created_at&order=created_at.desc`,
+    `${SUPABASE_URL}/rest/v1/profiles?select=username,email,role,created_at&order=created_at.desc`,
     { headers: headers(currentSession.access_token) }
   );
 
@@ -294,6 +395,7 @@ async function loadAccounts() {
   note.textContent = `${rows.length} account${rows.length === 1 ? '' : 's'}`;
   body.innerHTML = rows.map((row) => `
     <tr>
+      <td>${row.username || ''}</td>
       <td>${row.email || ''}</td>
       <td>
         <select class="role-select" data-email="${row.email}">
