@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mokio Messaging — More Information</title>
+  <meta name="description" content="Learn more about Mokio Messaging: fast conversations, game integration, and a platform built for mods.">
+  <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="../index.html" class="logo">
+        <img src="../images/logo.svg" alt="Mokio" class="logo-img">
+        <span class="logo-text">Mokio</span>
+      </a>
+      <nav class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#features">Apps</a>
+        <a href="music.html">Music</a>
+        <a href="../index.html#waitlist" class="btn btn-small">Join Waitlist</a>
+      </nav>
+      <div class="nav-right">
+        <button type="button" class="account-btn" id="accountBtn">
+          <span class="account-btn-icon">M</span>
+          <span id="accountBtnText">Sign In</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="badge">Mokio Messaging</div>
+      <h1>Chat first.<br><span class="gradient-text">Games next.</span></h1>
+      <p class="hero-subtitle">
+        Mokio Messaging starts as a fast, modern chat app — then opens up to mods and games so conversations can turn into play without switching platforms.
+      </p>
+      <div class="hero-actions">
+        <a href="../index.html#waitlist" class="btn btn-primary">Join the Waitlist</a>
+        <a href="../index.html" class="btn btn-secondary">Back to homepage</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>What’s in Mokio Messaging</h2>
+        <p>More detail on the tools and features that sit behind the homepage card.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(85, 231, 255, 0.15); color: #55e7ff;">Chat</div>
+          <h3>Clean, fast conversations</h3>
+          <p>Direct messages and group chats with a simple layout. The goal is speed and clarity first, then extra features on top.</p>
+        </div>
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(85, 231, 255, 0.15); color: #55e7ff;">Play</div>
+          <h3>Game integration</h3>
+          <p>Messaging is the doorway to games. Play together from a conversation instead of leaving the app for a separate launcher.</p>
+        </div>
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(85, 231, 255, 0.15); color: #55e7ff;">Mods</div>
+          <h3>Built for expansion</h3>
+          <p>Mods let creators add experiences, features, and interactions on top of chat — the same path that leads into games later.</p>
+        </div>
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(85, 231, 255, 0.15); color: #55e7ff;">Platform</div>
+          <h3>Connected to Mokio</h3>
+          <p>Accounts, music, and future products stay linked. Messaging is one surface of the same platform, not a standalone silo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="extra-info">
+    <div class="container extra-info-inner">
+      <h2>More information</h2>
+      <div class="extra-info-copy">
+        <p>Mokio Arc is an open-design messaging app designed for easy communication. Arc will launch as a simple app featuring a web version connected via the Mokio app. Later on, Arc will expand into gaming with integrations that allow users to install a mod and use Mokio Arc directly within their favorite games. The platform also enables users to find and join each other's game sessions effortlessly. Additionally, Arc features seamless integration with the music app Mokio Wave, allowing users to listen to songs together with their friends.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="modal" id="authModal" hidden>
+    <div class="modal-card auth-card">
+      <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
+      <div id="authGuest">
+        <div class="auth-brand">
+          <img src="../images/logo.svg" alt="" class="auth-logo">
+          <h2 id="authTitle">Welcome back</h2>
+          <p class="auth-sub" id="authSub">Sign in to your Mokio account.</p>
+        </div>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" data-mode="signup">Create account</button>
+        </div>
+        <form id="authForm">
+          <label id="usernameField" hidden>
+            <span class="field-label">Username</span>
+            <input type="text" name="username" placeholder="mokio" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}">
+          </label>
+          <label id="loginIdField">
+            <span class="field-label">Email or username</span>
+            <input type="text" name="email" placeholder="email or username" required>
+          </label>
+          <label>
+            <span class="field-label">Password</span>
+            <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+          </label>
+          <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
+        </form>
+        <p class="form-note auth-note" id="authNote"></p>
+      </div>
+      <div id="authSignedIn" hidden>
+        <div class="auth-brand">
+          <div class="auth-avatar" id="authAvatar">M</div>
+          <h2 id="authUserName">Account</h2>
+          <p class="auth-sub" id="authUserEmail"></p>
+          <span class="role-badge" id="authUserRole">member</span>
+        </div>
+        <div class="account-panel">
+          <label class="account-field">
+            <span class="field-label">Username</span>
+            <div class="username-row">
+              <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+              <button type="button" class="btn btn-small btn-primary" id="saveUsernameBtn">Save</button>
+            </div>
+          </label>
+          <p class="form-note" id="usernameNote"></p>
+          <button type="button" class="btn btn-secondary auth-signout" id="authSignOutLink">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="logo">
+          <img src="../images/logo.svg" alt="Mokio" class="logo-img">
+          <span class="logo-text">Mokio</span>
+        </a>
+        <p>Play. Connect. Create.</p>
+      </div>
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#features">Features</a>
+        <a href="music.html">Music</a>
+        <a href="messaging.html">Messaging</a>
+        <a href="../index.html#waitlist">Waitlist</a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=9AZPTK7UAUQBL" target="_blank" rel="noopener">Donate</a>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Mokio. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

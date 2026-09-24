@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mokio Music — More Information</title>
+  <meta name="description" content="Learn more about Mokio Music: discovery, creation tools, social listening, and playlists.">
+  <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="../index.html" class="logo">
+        <img src="../images/logo.svg" alt="Mokio" class="logo-img">
+        <span class="logo-text">Mokio</span>
+      </a>
+      <nav class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#features">Apps</a>
+        <a href="messaging.html">Messaging</a>
+        <a href="../index.html#waitlist" class="btn btn-small">Join Waitlist</a>
+      </nav>
+      <div class="nav-right">
+        <button type="button" class="account-btn" id="accountBtn">
+          <span class="account-btn-icon">M</span>
+          <span id="accountBtnText">Sign In</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="badge">Mokio Music</div>
+      <h1>Discover. Make.<br><span class="gradient-text">Share.</span></h1>
+      <p class="hero-subtitle">
+        Mokio Music is built for listening and creating in the same place — with editing tools, a clean interface, and features that keep people connected around what they play.
+      </p>
+      <div class="hero-actions">
+        <a href="../index.html#waitlist" class="btn btn-primary">Join the Waitlist</a>
+        <a href="../index.html" class="btn btn-secondary">Back to homepage</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>What’s in Mokio Music</h2>
+        <p>More detail on the tools and features that sit behind the homepage card.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(125, 140, 255, 0.18); color: #a8b4ff;">Create</div>
+          <h3>Creator-friendly tools</h3>
+          <p>Editing software is part of the app, not a separate product. Make tracks, trim, arrange, and share without leaving Mokio.</p>
+        </div>
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(125, 140, 255, 0.18); color: #a8b4ff;">Listen together</div>
+          <h3>Social listening</h3>
+          <p>Music is meant to be shared. Follow what friends are playing, drop into sessions, and keep listening social instead of isolated.</p>
+        </div>
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(125, 140, 255, 0.18); color: #a8b4ff;">Find</div>
+          <h3>Discovery & playlists</h3>
+          <p>Curated playlists and discovery tools help you find new music and keep your library organized as the catalog grows.</p>
+        </div>
+        <div class="feature-card">
+          <div class="role-badge" style="background: rgba(125, 140, 255, 0.18); color: #a8b4ff;">Design</div>
+          <h3>Clean interface</h3>
+          <p>The player and studio share one visual language so moving from listening to making feels like one product, not two bolted together.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="extra-info">
+    <div class="container extra-info-inner">
+      <h2>More information</h2>
+      <div class="extra-info-copy">
+        <p>Mokio Wave looks like a regular music app, but it is so much more. It introduces innovative software built specifically for you to create music directly within the app. Using the built-in editing panel, you can cut and clip your favorite tracks, then save them locally to your private library or publish them directly for the world to hear. Mokio Wave is a true all-in-one ecosystem designed for users to share, create, and earn. With just a few clicks, you will find yourself in a studio ready to build any song you can imagine.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="modal" id="authModal" hidden>
+    <div class="modal-card auth-card">
+      <button type="button" class="modal-close" id="authClose" aria-label="Close">×</button>
+      <div id="authGuest">
+        <div class="auth-brand">
+          <img src="../images/logo.svg" alt="" class="auth-logo">
+          <h2 id="authTitle">Welcome back</h2>
+          <p class="auth-sub" id="authSub">Sign in to your Mokio account.</p>
+        </div>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" data-mode="signup">Create account</button>
+        </div>
+        <form id="authForm">
+          <label id="usernameField" hidden>
+            <span class="field-label">Username</span>
+            <input type="text" name="username" placeholder="mokio" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}">
+          </label>
+          <label id="loginIdField">
+            <span class="field-label">Email or username</span>
+            <input type="text" name="email" placeholder="email or username" required>
+          </label>
+          <label>
+            <span class="field-label">Password</span>
+            <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+          </label>
+          <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
+        </form>
+        <p class="form-note auth-note" id="authNote"></p>
+      </div>
+      <div id="authSignedIn" hidden>
+        <div class="auth-brand">
+          <div class="auth-avatar" id="authAvatar">M</div>
+          <h2 id="authUserName">Account</h2>
+          <p class="auth-sub" id="authUserEmail"></p>
+          <span class="role-badge" id="authUserRole">member</span>
+        </div>
+        <div class="account-panel">
+          <label class="account-field">
+            <span class="field-label">Username</span>
+            <div class="username-row">
+              <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+              <button type="button" class="btn btn-small btn-primary" id="saveUsernameBtn">Save</button>
+            </div>
+          </label>
+          <p class="form-note" id="usernameNote"></p>
+          <button type="button" class="btn btn-secondary auth-signout" id="authSignOutLink">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="logo">
+          <img src="../images/logo.svg" alt="Mokio" class="logo-img">
+          <span class="logo-text">Mokio</span>
+        </a>
+        <p>Play. Connect. Create.</p>
+      </div>
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#features">Features</a>
+        <a href="music.html">Music</a>
+        <a href="messaging.html">Messaging</a>
+        <a href="../index.html#waitlist">Waitlist</a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=9AZPTK7UAUQBL" target="_blank" rel="noopener">Donate</a>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Mokio. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

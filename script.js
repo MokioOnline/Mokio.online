@@ -105,6 +105,9 @@ document.getElementById('authClose')?.addEventListener('click', () => {
 authModal?.addEventListener('click', (e) => {
   if (e.target === authModal) authModal.hidden = true;
 });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && authModal && !authModal.hidden) authModal.hidden = true;
+});
 
 document.querySelectorAll('.auth-tab').forEach((tab) => {
   tab.addEventListener('click', () => {
@@ -118,23 +121,23 @@ function setAuthMode(mode) {
   authMode = mode;
   if (authTitle) authTitle.textContent = mode === 'signin' ? 'Welcome back' : 'Create your account';
   if (authSub) authSub.textContent = mode === 'signin'
-    ? 'Sign in to your Mokio account.'
-    : 'Anyone can join. Passwords stay private.';
+    ? 'Sign in with your email or username.'
+    : 'Pick a username. Passwords stay private.';
   if (authSubmit) authSubmit.textContent = mode === 'signin' ? 'Sign In' : 'Create account';
   const usernameField = document.getElementById('usernameField');
   const loginIdField = document.getElementById('loginIdField');
   if (usernameField) usernameField.hidden = mode !== 'signup';
   if (loginIdField) {
-    const labelText = loginIdField.childNodes[0];
+    const label = loginIdField.querySelector('.field-label');
     const input = loginIdField.querySelector('input');
     if (mode === 'signup') {
-      loginIdField.childNodes[0].textContent = '\n            Email\n            ';
+      if (label) label.textContent = 'Email';
       if (input) {
         input.type = 'email';
         input.placeholder = 'you@email.com';
       }
     } else {
-      loginIdField.childNodes[0].textContent = '\n            Email or username\n            ';
+      if (label) label.textContent = 'Email or username';
       if (input) {
         input.type = 'text';
         input.placeholder = 'email or username';
@@ -340,13 +343,14 @@ function updateStaffUI() {
   if (authSignedIn) authSignedIn.hidden = !signedIn;
   const username = currentProfile?.username || '';
   if (document.getElementById('authUserName')) {
-    document.getElementById('authUserName').textContent = username ? '@' + username : email;
+    document.getElementById('authUserName').textContent = username ? '@' + username : 'Account';
   }
   if (document.getElementById('usernameEdit') && username) {
     document.getElementById('usernameEdit').value = username;
   }
   if (document.getElementById('authUserEmail')) {
-    document.getElementById('authUserEmail').hidden = true;
+    document.getElementById('authUserEmail').hidden = !email;
+    document.getElementById('authUserEmail').textContent = email;
   }
   if (document.getElementById('authUserRole')) {
     document.getElementById('authUserRole').textContent = currentProfile?.role || 'member';

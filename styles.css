@@ -677,7 +677,8 @@ a.staff-card:hover {
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(6, 6, 12, 0.72);
+  backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -690,24 +691,33 @@ a.staff-card:hover {
 }
 
 .modal-card {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 28%), var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 32px;
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(125,140,255,0.08);
 }
 
 .modal-close {
   position: absolute;
-  top: 12px;
-  right: 16px;
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 28px;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
+}
+.modal-close:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.08);
 }
 
 #authForm {
@@ -992,3 +1002,77 @@ a.staff-card:hover {
   border: none;
 }
 .donate-btn:hover { opacity: 0.92; }
+
+
+.field-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.account-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  margin-top: 8px;
+}
+
+.account-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.username-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.username-row input,
+#usernameEdit {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.username-row input:focus,
+#authForm input:focus,
+#usernameEdit:focus {
+  outline: none;
+  border-color: rgba(125, 140, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(125, 140, 255, 0.15);
+}
+
+.auth-signout {
+  width: 100%;
+}
+
+#authSignedIn .role-badge {
+  margin: 12px auto 0;
+}
+
+.accounts-table th {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.accounts-table tbody tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+.extra-info-copy p:empty {
+  display: none;
+}

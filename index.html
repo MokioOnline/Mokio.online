@@ -205,15 +205,15 @@
 
         <form id="authForm">
           <label id="usernameField" hidden>
-            Username
+            <span class="field-label">Username</span>
             <input type="text" name="username" placeholder="mokio" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}">
           </label>
           <label id="loginIdField">
-            Email or username
+            <span class="field-label">Email or username</span>
             <input type="text" name="email" placeholder="email or username" required>
           </label>
           <label>
-            Password
+            <span class="field-label">Password</span>
             <input type="password" name="password" placeholder="••••••••" minlength="6" required>
           </label>
           <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
@@ -224,17 +224,21 @@
       <div id="authSignedIn" hidden>
         <div class="auth-brand">
           <div class="auth-avatar" id="authAvatar">M</div>
-          <h2>Account</h2>
-          <p class="auth-sub" id="authUserName"></p>
-          <p class="auth-sub" id="authUserEmail" hidden></p>
+          <h2 id="authUserName">Account</h2>
+          <p class="auth-sub" id="authUserEmail"></p>
           <span class="role-badge" id="authUserRole">member</span>
         </div>
-        <div class="username-row">
-          <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
-          <button type="button" class="btn btn-primary" id="saveUsernameBtn">Save</button>
+        <div class="account-panel">
+          <label class="account-field">
+            <span class="field-label">Username</span>
+            <div class="username-row">
+              <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+              <button type="button" class="btn btn-small btn-primary" id="saveUsernameBtn">Save</button>
+            </div>
+          </label>
+          <p class="form-note" id="usernameNote"></p>
+          <button type="button" class="btn btn-secondary auth-signout" id="authSignOutLink">Sign out</button>
         </div>
-        <p class="form-note" id="usernameNote"></p>
-        <button type="button" class="text-link" id="authSignOutLink">Sign out</button>
       </div>
     </div>
   </div>
