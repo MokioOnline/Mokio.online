@@ -226,16 +226,15 @@
           <div class="auth-avatar" id="authAvatar">M</div>
           <h2>Account</h2>
           <p class="auth-sub" id="authUserName"></p>
-          <p class="auth-sub" id="authUserEmail"></p>
+          <p class="auth-sub" id="authUserEmail" hidden></p>
           <span class="role-badge" id="authUserRole">member</span>
         </div>
-        <label>
-          Username
-          <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="yourname">
-        </label>
-        <button type="button" class="btn btn-primary" id="saveUsernameBtn">Save username</button>
+        <div class="username-row">
+          <input type="text" id="usernameEdit" minlength="3" maxlength="20" pattern="[A-Za-z0-9._-]{3,20}" placeholder="username">
+          <button type="button" class="btn btn-primary" id="saveUsernameBtn">Save</button>
+        </div>
         <p class="form-note" id="usernameNote"></p>
-        <button type="button" class="text-link" id="authSignOutLink">Sign out of this device</button>
+        <button type="button" class="text-link" id="authSignOutLink">Sign out</button>
       </div>
     </div>
   </div>

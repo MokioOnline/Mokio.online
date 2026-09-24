@@ -187,17 +187,12 @@ authForm?.addEventListener('submit', async (e) => {
       if (!res.ok) throw new Error(data.error_description || data.msg || data.message || 'Sign up failed');
       const token = data.access_token || data.session?.access_token;
       const userId = data.user?.id || data.id;
-      if (token && userId) {
-        const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
-          method: 'PATCH',
-          headers: { ...headers(token), Prefer: 'return=minimal' },
-          body: JSON.stringify({ username, email })
+      if (token) {
+        await fetch(`${SUPABASE_URL}/rest/v1/rpc/set_my_username`, {
+          method: 'POST',
+          headers: headers(token),
+          body: JSON.stringify({ uname: username })
         });
-        if (!patchRes.ok) {
-          authNote.textContent = 'Account created, but username may need the SQL fix below. You can still sign in.';
-          setAuthMode('signin');
-          return;
-        }
       }
       authNote.textContent = 'Account created. You can sign in now.';
       setAuthMode('signin');
@@ -241,14 +236,14 @@ document.getElementById('saveUsernameBtn')?.addEventListener('click', async () =
     return;
   }
   if (note) note.textContent = 'Saving...';
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentSession.user.id}`, {
-    method: 'PATCH',
-    headers: { ...headers(currentSession.access_token), Prefer: 'return=minimal' },
-    body: JSON.stringify({ username: value })
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/set_my_username`, {
+    method: 'POST',
+    headers: headers(currentSession.access_token),
+    body: JSON.stringify({ uname: value })
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    if (note) note.textContent = err.message || 'Could not save username. It may already be taken.';
+  const result = await res.json().catch(() => null);
+  if (!res.ok || result === false) {
+    if (note) note.textContent = (result && result.message) || 'Could not save username. It may already be taken.';
     return;
   }
   if (currentProfile) currentProfile.username = value;
@@ -315,6 +310,15 @@ async function loadProfile() {
     rows = await res.json();
   }
   currentProfile = Array.isArray(rows) ? rows[0] : null;
+  const metaName = (currentSession.user?.user_metadata?.username || '').toLowerCase();
+  if (currentProfile && !currentProfile.username && metaName) {
+    await fetch(`${SUPABASE_URL}/rest/v1/rpc/set_my_username`, {
+      method: 'POST',
+      headers: headers(currentSession.access_token),
+      body: JSON.stringify({ uname: metaName })
+    });
+    currentProfile.username = metaName;
+  }
   updateStaffUI();
   if (document.getElementById('accountsBody')) loadAccounts();
 }
