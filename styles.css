@@ -366,6 +366,20 @@ ul {
   background: var(--accent);
 }
 
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a8b4ff;
+  transition: color 0.2s, gap 0.2s;
+}
+
+.feature-link:hover {
+  color: #fff;
+}
+
 /* ===== Vision ===== */
 .vision {
   padding: 100px 0;
