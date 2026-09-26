@@ -262,27 +262,122 @@ document.getElementById('authSignOutLink')?.addEventListener('click', async () =
     }).catch(() => {});
   }
   localStorage.removeItem('mokio_session');
+  rememberRole('');
   currentSession = null;
   currentProfile = null;
   if (window.MOKIO_REQUIRED_ROLES) {
     location.replace(homePath());
     return;
   }
-  updateStaffUI();
+  updateStaffUI({ confirmed: true });
 });
+
+const STAFF_ROLES = ['owner', 'mod', 'tester', 'dev'];
 
 function saveSession(data) {
   currentSession = {
-    access_token: data.access_token,
-    refresh_token: data.refresh_token,
-    user: data.user
+    access_token: data.access_token || currentSession?.access_token,
+    refresh_token: data.refresh_token || currentSession?.refresh_token,
+    user: data.user || currentSession?.user || null
   };
   localStorage.setItem('mokio_session', JSON.stringify(currentSession));
 }
 
+function cachedRole() {
+  try {
+    return (localStorage.getItem('mokio_role') || '').toLowerCase();
+  } catch (_) {
+    return '';
+  }
+}
+
+function rememberRole(role) {
+  try {
+    if (role) localStorage.setItem('mokio_role', String(role).toLowerCase());
+    else localStorage.removeItem('mokio_role');
+  } catch (_) {}
+}
+
+function tokenExpired(token) {
+  if (!token || typeof token !== 'string') return true;
+  const parts = token.split('.');
+  if (parts.length < 2) return false;
+  try {
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!payload.exp) return false;
+    return payload.exp * 1000 < Date.now() + 30_000;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function refreshSession() {
+  const refreshToken = currentSession?.refresh_token;
+  if (!refreshToken) return false;
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify({ refresh_token: refreshToken })
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data?.access_token) return false;
+  saveSession(data);
+  return true;
+}
+
+async function ensureFreshSession() {
+  if (!currentSession?.access_token && !currentSession?.refresh_token) return false;
+  if (tokenExpired(currentSession.access_token)) {
+    const ok = await refreshSession();
+    if (!ok) return false;
+  }
+  return Boolean(currentSession?.access_token);
+}
+
+async function fetchProfileRows() {
+  const userId = currentSession?.user?.id;
+  const email = (currentSession?.user?.email || '').toLowerCase();
+  const token = currentSession.access_token;
+
+  if (userId) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=id,email,role,username`,
+      { headers: headers(token) }
+    );
+    if (res.status === 401) return { unauthorized: true, rows: [] };
+    if (res.ok) {
+      const rows = await res.json();
+      if (Array.isArray(rows) && rows[0]) return { rows };
+    }
+  }
+
+  if (email) {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email,role,username`,
+      { headers: headers(token) }
+    );
+    if (res.status === 401) return { unauthorized: true, rows: [] };
+    if (res.ok) return { rows: await res.json() };
+  }
+
+  return { rows: [] };
+}
+
 async function loadProfile() {
-  if (!currentSession?.access_token) {
-    updateStaffUI();
+  if (!currentSession?.access_token && !currentSession?.refresh_token) {
+    currentProfile = null;
+    rememberRole('');
+    updateStaffUI({ confirmed: true });
+    return;
+  }
+
+  const fresh = await ensureFreshSession();
+  if (!fresh) {
+    currentSession = null;
+    currentProfile = null;
+    localStorage.removeItem('mokio_session');
+    rememberRole('');
+    updateStaffUI({ confirmed: true });
     return;
   }
 
@@ -290,29 +385,29 @@ async function loadProfile() {
     const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: headers(currentSession.access_token)
     });
-    if (userRes.ok) currentSession.user = await userRes.json();
+    if (userRes.status === 401) {
+      const refreshed = await refreshSession();
+      if (refreshed) {
+        const retry = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers: headers(currentSession.access_token)
+        });
+        if (retry.ok) currentSession.user = await retry.json();
+      }
+    } else if (userRes.ok) {
+      currentSession.user = await userRes.json();
+      saveSession(currentSession);
+    }
   }
 
-  if (!currentSession.user?.id) {
-    updateStaffUI();
-    return;
+  let result = await fetchProfileRows();
+  if (result.unauthorized) {
+    const refreshed = await refreshSession();
+    if (refreshed) result = await fetchProfileRows();
   }
 
-  const userId = currentSession.user.id;
-  const email = (currentSession.user.email || '').toLowerCase();
-  let res = await fetch(
-    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=id,email,role,username`,
-    { headers: headers(currentSession.access_token) }
-  );
-  let rows = await res.json();
-  if (!Array.isArray(rows) || !rows[0]) {
-    res = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,email,role,username`,
-      { headers: headers(currentSession.access_token) }
-    );
-    rows = await res.json();
-  }
-  currentProfile = Array.isArray(rows) ? rows[0] : null;
+  currentProfile = Array.isArray(result.rows) ? result.rows[0] : null;
+  if (currentProfile?.role) rememberRole(currentProfile.role);
+
   const metaName = (currentSession.user?.user_metadata?.username || '').toLowerCase();
   if (currentProfile && !currentProfile.username && metaName) {
     await fetch(`${SUPABASE_URL}/rest/v1/rpc/set_my_username`, {
@@ -322,19 +417,30 @@ async function loadProfile() {
     });
     currentProfile.username = metaName;
   }
-  updateStaffUI();
+
+  updateStaffUI({ confirmed: Boolean(currentProfile) || !currentSession });
   if (document.getElementById('accountsBody')) loadAccounts();
 }
 
+function normalizedRole() {
+  return (currentProfile?.role || cachedRole() || '').toLowerCase();
+}
+
 function hasRole(...roles) {
-  return currentProfile && roles.includes(currentProfile.role);
+  const role = normalizedRole();
+  return Boolean(role && roles.map((r) => String(r).toLowerCase()).includes(role));
+}
+
+function isStaff() {
+  return hasRole(...STAFF_ROLES);
 }
 
 function homePath() {
   return location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
 }
 
-function updateStaffUI() {
+function updateStaffUI(opts = {}) {
+  const confirmed = Boolean(opts.confirmed);
   const signedIn = Boolean(currentSession?.access_token);
   const btnText = document.getElementById('accountBtnText');
   const email = currentProfile?.email || currentSession?.user?.email || '';
@@ -360,14 +466,16 @@ function updateStaffUI() {
     el.textContent = initial;
   });
 
-  const allowed = Boolean(currentProfile && ['owner', 'mod', 'tester'].includes(String(currentProfile.role).toLowerCase()));
+  const allowed = isStaff();
   if (staffNavLink) staffNavLink.hidden = !allowed;
-  if (staffSection) staffSection.hidden = !allowed;
+  if (staffSection) staffSection.hidden = false;
 
   const welcome = document.getElementById('staffWelcome');
   if (welcome) {
     if (allowed) {
-      welcome.textContent = `Signed in as ${currentProfile.email || currentSession.user.email} — role: ${currentProfile.role}`;
+      const who = currentProfile?.email || currentSession?.user?.email || 'staff';
+      const role = currentProfile?.role || cachedRole() || 'staff';
+      welcome.textContent = `Signed in as ${who} — role: ${role}`;
     } else if (signedIn) {
       welcome.textContent = 'Your account is pending. An owner must assign you a role.';
     }
@@ -379,7 +487,7 @@ function updateStaffUI() {
   });
 
   const required = window.MOKIO_REQUIRED_ROLES;
-  if (required && required.length && !hasRole(...required)) {
+  if (required && required.length && confirmed && !hasRole(...required)) {
     location.replace(homePath());
   }
 }
@@ -436,10 +544,15 @@ async function loadAccounts() {
 // Restore session
 try {
   const saved = JSON.parse(localStorage.getItem('mokio_session') || 'null');
-  if (saved?.access_token) {
+  if (saved?.access_token || saved?.refresh_token) {
     currentSession = saved;
+    if (cachedRole()) updateStaffUI({ confirmed: false });
     loadProfile();
   } else if (window.MOKIO_REQUIRED_ROLES) {
     location.replace(homePath());
+  } else {
+    updateStaffUI({ confirmed: true });
   }
-} catch (_) {}
+} catch (_) {
+  updateStaffUI({ confirmed: true });
+}
