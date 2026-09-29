@@ -117,44 +117,16 @@ document.querySelectorAll('.auth-tab').forEach((tab) => {
   });
 });
 
-function homePath() {
-  return location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
-}
-
-function resetRedirectUrl() {
-  const origin = location.origin;
-  if (location.pathname.includes('/pages/')) {
-    return origin + location.pathname.replace(/[^/]+$/, 'reset.html');
-  }
-  const dir = location.pathname.replace(/[^/]+$/, '');
-  return origin + dir + 'pages/reset.html';
-}
-
 function setAuthMode(mode) {
   authMode = mode;
-  const isReset = mode === 'reset';
-  if (authTitle) {
-    authTitle.textContent = mode === 'signup' ? 'Create your account' : (isReset ? 'Reset password' : 'Welcome back');
-  }
-  if (authSub) {
-    authSub.textContent = mode === 'signup'
-      ? 'Pick a username. Passwords stay private.'
-      : (isReset
-        ? 'Enter your email or username. We will send a reset link.'
-        : 'Sign in with your email or username.');
-  }
-  if (authSubmit) authSubmit.textContent = mode === 'signup' ? 'Create account' : (isReset ? 'Send reset email' : 'Sign In');
+  if (authTitle) authTitle.textContent = mode === 'signin' ? 'Welcome back' : 'Create your account';
+  if (authSub) authSub.textContent = mode === 'signin'
+    ? 'Sign in with your email or username.'
+    : 'Pick a username. Passwords stay private.';
+  if (authSubmit) authSubmit.textContent = mode === 'signin' ? 'Sign In' : 'Create account';
   const usernameField = document.getElementById('usernameField');
   const loginIdField = document.getElementById('loginIdField');
-  const passwordField = document.getElementById('passwordField');
-  const forgotWrap = document.getElementById('forgotWrap');
-  const backWrap = document.getElementById('backToSigninWrap');
   if (usernameField) usernameField.hidden = mode !== 'signup';
-  if (passwordField) passwordField.hidden = isReset;
-  if (forgotWrap) forgotWrap.hidden = mode !== 'signin';
-  if (backWrap) backWrap.hidden = !isReset;
-  const passInput = passwordField && passwordField.querySelector('input');
-  if (passInput) passInput.required = !isReset;
   if (loginIdField) {
     const label = loginIdField.querySelector('.field-label');
     const input = loginIdField.querySelector('input');
@@ -163,12 +135,6 @@ function setAuthMode(mode) {
       if (input) {
         input.type = 'email';
         input.placeholder = 'you@email.com';
-      }
-    } else if (isReset) {
-      if (label) label.textContent = 'Email or username';
-      if (input) {
-        input.type = 'text';
-        input.placeholder = 'email or username';
       }
     } else {
       if (label) label.textContent = 'Email or username';
@@ -179,17 +145,6 @@ function setAuthMode(mode) {
     }
   }
 }
-
-document.getElementById('forgotBtn')?.addEventListener('click', () => {
-  document.querySelectorAll('.auth-tab').forEach((t) => t.classList.remove('active'));
-  setAuthMode('reset');
-  if (authNote) authNote.textContent = '';
-});
-document.getElementById('backToSigninBtn')?.addEventListener('click', () => {
-  document.querySelectorAll('.auth-tab').forEach((t) => t.classList.toggle('active', t.dataset.mode === 'signin'));
-  setAuthMode('signin');
-  if (authNote) authNote.textContent = '';
-});
 
 async function emailFromUsername(username) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/email_for_username`, {
@@ -203,25 +158,6 @@ async function emailFromUsername(username) {
   return null;
 }
 
-async function requestPasswordReset(rawHandle) {
-  let email = String(rawHandle || '').trim().toLowerCase().replace(/^@/, '');
-  if (!email) throw new Error('Enter your email or username.');
-  if (!email.includes('@')) {
-    email = await emailFromUsername(email);
-    if (!email) throw new Error('No account found with that username.');
-  }
-  const redirectTo = resetRedirectUrl() + '?email=' + encodeURIComponent(email);
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`, {
-    method: 'POST',
-    headers: headers(),
-    body: JSON.stringify({ email })
-  });
-  if (!res.ok && res.status >= 500) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error_description || data.msg || data.message || 'Could not send reset email.');
-  }
-}
-
 authForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = authForm.email.value.trim().toLowerCase();
@@ -230,11 +166,6 @@ authForm?.addEventListener('submit', async (e) => {
   authNote.textContent = 'Working...';
 
   try {
-    if (authMode === 'reset') {
-      await requestPasswordReset(email);
-      authNote.textContent = 'If that account exists, a confirmation email is on the way. The reset page stays open for 5 minutes.';
-      return;
-    }
     if (authMode === 'signup') {
       if (!email.includes('@')) {
         throw new Error('Use a real email when creating an account.');
@@ -504,6 +435,10 @@ function isStaff() {
   return hasRole(...STAFF_ROLES);
 }
 
+function homePath() {
+  return location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
+}
+
 function updateStaffUI(opts = {}) {
   const confirmed = Boolean(opts.confirmed);
   const signedIn = Boolean(currentSession?.access_token);
@@ -604,173 +539,6 @@ async function loadAccounts() {
       note.textContent = updateRes.ok ? `Updated ${email} to ${role}.` : 'Could not update role.';
     });
   });
-}
-
-async function exchangeRecoverySession() {
-  const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const query = new URLSearchParams(location.search);
-  const type = (hash.get('type') || query.get('type') || '').toLowerCase();
-  const access = hash.get('access_token');
-  const refresh = hash.get('refresh_token');
-  const tokenHash = query.get('token_hash') || query.get('token');
-  if (access && (type === 'recovery' || type === 'magiclink' || type === 'signup' || !type)) {
-    saveSession({ access_token: access, refresh_token: refresh, user: null });
-    return true;
-  }
-  if (tokenHash && (type === 'recovery' || !type)) {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify({ type: type || 'recovery', token_hash: tokenHash, token: tokenHash })
-    });
-    const data = await res.json().catch(() => ({}));
-    const token = data.access_token || data.session?.access_token;
-    if (!res.ok || !token) throw new Error(data.error_description || data.msg || 'This reset link is invalid or expired.');
-    saveSession(data.session || data);
-    return true;
-  }
-  return false;
-}
-
-function redirectToResetPage() {
-  const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const query = new URLSearchParams(location.search);
-  const type = (hash.get('type') || query.get('type') || '').toLowerCase();
-  const looksLikeReset = type === 'recovery' || query.get('token_hash') || (hash.get('access_token') && type === 'recovery');
-  if (!looksLikeReset) return false;
-  if (location.pathname.endsWith('reset.html')) return false;
-  const dest = (location.pathname.includes('/pages/') ? 'reset.html' : 'pages/reset.html') + location.search + location.hash;
-  location.replace(dest);
-  return true;
-}
-
-function tokenIssuedAt(token) {
-  try {
-    const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    const payload = JSON.parse(atob(part));
-    if (payload.iat) return payload.iat * 1000;
-  } catch (_) {}
-  return Date.now();
-}
-
-const RESET_WINDOW_MS = 5 * 60 * 1000;
-
-async function setupResetPage() {
-  const form = document.getElementById('resetForm');
-  if (!form) return;
-  const status = document.getElementById('resetStatus');
-  const note = document.getElementById('resetNote');
-  const timerEl = document.getElementById('resetTimer');
-  const emailLine = document.getElementById('resetEmailLine');
-  const expectedEmail = (new URLSearchParams(location.search).get('email') || '').trim().toLowerCase();
-  let expiresAt = Date.now() + RESET_WINDOW_MS;
-  let expired = false;
-
-  function expireReset(message) {
-    expired = true;
-    form.hidden = true;
-    form.querySelectorAll('input,button').forEach((el) => { el.disabled = true; });
-    if (status) status.textContent = message || 'This reset page has expired. Request a new confirmation email.';
-    if (timerEl) {
-      timerEl.hidden = false;
-      timerEl.textContent = 'Expired after 5 minutes';
-      timerEl.classList.add('is-expired');
-    }
-  }
-
-  function tickTimer() {
-    const left = expiresAt - Date.now();
-    if (left <= 0) {
-      expireReset('This reset page timed out after 5 minutes. Request a new email to continue.');
-      return;
-    }
-    const mins = Math.floor(left / 60000);
-    const secs = Math.floor((left % 60000) / 1000);
-    if (timerEl) {
-      timerEl.hidden = false;
-      timerEl.textContent = 'This page expires in ' + mins + ':' + String(secs).padStart(2, '0');
-    }
-    setTimeout(tickTimer, 250);
-  }
-
-  try {
-    const ok = await exchangeRecoverySession();
-    if (!ok || !currentSession?.access_token) {
-      expireReset('Open the confirmation email we sent, then use that link. This page only works from that email.');
-      return;
-    }
-    const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: headers(currentSession.access_token)
-    });
-    const user = userRes.ok ? await userRes.json() : null;
-    const sessionEmail = String(user?.email || currentSession.user?.email || '').toLowerCase();
-    if (expectedEmail && sessionEmail && expectedEmail !== sessionEmail) {
-      expireReset('This reset page is for a different email. Use the link from your own confirmation email.');
-      return;
-    }
-    const shownEmail = expectedEmail || sessionEmail;
-    if (shownEmail && emailLine) {
-      emailLine.hidden = false;
-      emailLine.textContent = 'Resetting password for ' + shownEmail;
-    }
-    expiresAt = tokenIssuedAt(currentSession.access_token) + RESET_WINDOW_MS;
-    if (Date.now() >= expiresAt) {
-      expireReset('This confirmation email is older than 5 minutes. Request a new one.');
-      return;
-    }
-    if (status) status.textContent = 'Choose a new password. This page closes in 5 minutes.';
-    form.hidden = false;
-    form.removeAttribute('hidden');
-    tickTimer();
-  } catch (err) {
-    expireReset(err.message || 'This confirmation link is invalid or expired.');
-    return;
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (expired || Date.now() >= expiresAt) {
-      expireReset('This reset page timed out after 5 minutes. Request a new email to continue.');
-      return;
-    }
-    const password = form.password.value;
-    const confirm = form.confirm.value;
-    if (password.length < 6) {
-      note.textContent = 'Use at least 6 characters.';
-      return;
-    }
-    if (password !== confirm) {
-      note.textContent = 'Passwords do not match.';
-      return;
-    }
-    note.textContent = 'Saving...';
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      method: 'PUT',
-      headers: headers(currentSession.access_token),
-      body: JSON.stringify({ password })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      note.textContent = data.error_description || data.msg || data.message || 'Could not update password.';
-      return;
-    }
-    form.hidden = true;
-    if (timerEl) timerEl.hidden = true;
-    if (status) status.textContent = 'Password saved.';
-    const done = document.getElementById('resetDone');
-    if (done) {
-      done.hidden = false;
-      done.removeAttribute('hidden');
-    }
-    const keepEmail = expectedEmail ? ('?email=' + encodeURIComponent(expectedEmail)) : '';
-    history.replaceState({}, document.title, location.pathname + keepEmail);
-  });
-}
-
-if (redirectToResetPage()) {
-  // leave this page so the reset form can finish the email link
-} else {
-  setupResetPage();
 }
 
 // Restore session
