@@ -1120,3 +1120,13 @@ a.staff-card:hover {
   font-size: 15px;
   font-weight: 400;
 }
+
+.reset-timer {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #55e7ff;
+}
+.reset-timer.is-expired {
+  color: #ff8a8a;
+}

@@ -210,7 +210,7 @@ async function requestPasswordReset(rawHandle) {
     email = await emailFromUsername(email);
     if (!email) throw new Error('No account found with that username.');
   }
-  const redirectTo = resetRedirectUrl();
+  const redirectTo = resetRedirectUrl() + '?email=' + encodeURIComponent(email);
   const res = await fetch(`${SUPABASE_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`, {
     method: 'POST',
     headers: headers(),
@@ -232,7 +232,7 @@ authForm?.addEventListener('submit', async (e) => {
   try {
     if (authMode === 'reset') {
       await requestPasswordReset(email);
-      authNote.textContent = 'If that account exists, a reset email is on the way. Check your inbox.';
+      authNote.textContent = 'If that account exists, a confirmation email is on the way. The reset page stays open for 5 minutes.';
       return;
     }
     if (authMode === 'signup') {
@@ -644,26 +644,95 @@ function redirectToResetPage() {
   return true;
 }
 
+function tokenIssuedAt(token) {
+  try {
+    const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(part));
+    if (payload.iat) return payload.iat * 1000;
+  } catch (_) {}
+  return Date.now();
+}
+
+const RESET_WINDOW_MS = 5 * 60 * 1000;
+
 async function setupResetPage() {
   const form = document.getElementById('resetForm');
   if (!form) return;
   const status = document.getElementById('resetStatus');
   const note = document.getElementById('resetNote');
+  const timerEl = document.getElementById('resetTimer');
+  const emailLine = document.getElementById('resetEmailLine');
+  const expectedEmail = (new URLSearchParams(location.search).get('email') || '').trim().toLowerCase();
+  let expiresAt = Date.now() + RESET_WINDOW_MS;
+  let expired = false;
+
+  function expireReset(message) {
+    expired = true;
+    form.hidden = true;
+    form.querySelectorAll('input,button').forEach((el) => { el.disabled = true; });
+    if (status) status.textContent = message || 'This reset page has expired. Request a new confirmation email.';
+    if (timerEl) {
+      timerEl.hidden = false;
+      timerEl.textContent = 'Expired after 5 minutes';
+      timerEl.classList.add('is-expired');
+    }
+  }
+
+  function tickTimer() {
+    const left = expiresAt - Date.now();
+    if (left <= 0) {
+      expireReset('This reset page timed out after 5 minutes. Request a new email to continue.');
+      return;
+    }
+    const mins = Math.floor(left / 60000);
+    const secs = Math.floor((left % 60000) / 1000);
+    if (timerEl) {
+      timerEl.hidden = false;
+      timerEl.textContent = 'This page expires in ' + mins + ':' + String(secs).padStart(2, '0');
+    }
+    setTimeout(tickTimer, 250);
+  }
+
   try {
     const ok = await exchangeRecoverySession();
     if (!ok || !currentSession?.access_token) {
-      if (status) status.textContent = 'This reset link is missing or expired. Request a new one from Sign in → Forgot password.';
+      expireReset('Open the confirmation email we sent, then use that link. This page only works from that email.');
       return;
     }
-    if (status) status.textContent = 'Choose a new password for your Mokio account.';
+    const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: headers(currentSession.access_token)
+    });
+    const user = userRes.ok ? await userRes.json() : null;
+    const sessionEmail = String(user?.email || currentSession.user?.email || '').toLowerCase();
+    if (expectedEmail && sessionEmail && expectedEmail !== sessionEmail) {
+      expireReset('This reset page is for a different email. Use the link from your own confirmation email.');
+      return;
+    }
+    const shownEmail = expectedEmail || sessionEmail;
+    if (shownEmail && emailLine) {
+      emailLine.hidden = false;
+      emailLine.textContent = 'Resetting password for ' + shownEmail;
+    }
+    expiresAt = tokenIssuedAt(currentSession.access_token) + RESET_WINDOW_MS;
+    if (Date.now() >= expiresAt) {
+      expireReset('This confirmation email is older than 5 minutes. Request a new one.');
+      return;
+    }
+    if (status) status.textContent = 'Choose a new password. This page closes in 5 minutes.';
     form.hidden = false;
     form.removeAttribute('hidden');
+    tickTimer();
   } catch (err) {
-    if (status) status.textContent = err.message || 'This reset link is invalid or expired.';
+    expireReset(err.message || 'This confirmation link is invalid or expired.');
     return;
   }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (expired || Date.now() >= expiresAt) {
+      expireReset('This reset page timed out after 5 minutes. Request a new email to continue.');
+      return;
+    }
     const password = form.password.value;
     const confirm = form.confirm.value;
     if (password.length < 6) {
@@ -686,13 +755,15 @@ async function setupResetPage() {
       return;
     }
     form.hidden = true;
+    if (timerEl) timerEl.hidden = true;
     if (status) status.textContent = 'Password saved.';
     const done = document.getElementById('resetDone');
     if (done) {
       done.hidden = false;
       done.removeAttribute('hidden');
     }
-    history.replaceState({}, document.title, location.pathname);
+    const keepEmail = expectedEmail ? ('?email=' + encodeURIComponent(expectedEmail)) : '';
+    history.replaceState({}, document.title, location.pathname + keepEmail);
   });
 }
 
