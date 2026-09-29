@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset password — Mokio</title>
+  <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="../index.html" class="logo">
+        <img src="../images/logo.svg" alt="Mokio" class="logo-img">
+        <span class="logo-text">Mokio</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container reset-wrap">
+      <div class="modal-card auth-card reset-card">
+        <div class="auth-brand">
+          <img src="../images/logo.svg" alt="" class="auth-logo">
+          <h2>Reset password</h2>
+          <p class="auth-sub" id="resetStatus">Checking your reset link…</p>
+        </div>
+        <form id="resetForm" hidden>
+          <label>
+            <span class="field-label">New password</span>
+            <input type="password" name="password" minlength="6" required placeholder="At least 6 characters">
+          </label>
+          <label>
+            <span class="field-label">Confirm password</span>
+            <input type="password" name="confirm" minlength="6" required placeholder="Repeat new password">
+          </label>
+          <button type="submit" class="btn btn-primary auth-submit" id="resetSubmit">Save new password</button>
+          <p class="form-note auth-note" id="resetNote"></p>
+        </form>
+        <p class="form-note" id="resetDone" hidden>Password updated. You can now <a href="../index.html">sign in</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="logo">
+          <img src="../images/logo.svg" alt="Mokio" class="logo-img">
+          <span class="logo-text">Mokio</span>
+        </a>
+        <p>Play. Connect. Create.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Mokio. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

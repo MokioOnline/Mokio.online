@@ -110,12 +110,18 @@
             <span class="field-label">Email or username</span>
             <input type="text" name="email" placeholder="email or username" required>
           </label>
-          <label>
+          <label id="passwordField">
             <span class="field-label">Password</span>
-            <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+            <input type="password" name="password" placeholder="••••••••" minlength="6">
           </label>
           <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">Sign In</button>
         </form>
+        <p class="auth-extra" id="forgotWrap">
+          <button type="button" class="text-link" id="forgotBtn">Forgot password?</button>
+        </p>
+        <p class="auth-extra" id="backToSigninWrap" hidden>
+          <button type="button" class="text-link" id="backToSigninBtn">Back to sign in</button>
+        </p>
         <p class="form-note auth-note" id="authNote"></p>
       </div>
       <div id="authSignedIn" hidden>
