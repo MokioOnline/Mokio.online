@@ -265,7 +265,7 @@ ul {
   border-radius: 20px;
 }
 
-/* ===== Features ===== */
+/* ===== Features Section & Hover Menu ===== */
 .features {
   padding: 100px 0;
 }
@@ -296,17 +296,24 @@ ul {
   gap: 28px;
 }
 
+/* Feature Card Container */
 .feature-card {
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 36px;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .feature-card:hover {
-  border-color: rgba(125, 140, 255, 0.35);
+  border-color: rgba(85, 231, 255, 0.4);
   transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(85, 231, 255, 0.08);
 }
 
 .feature-icon {
@@ -378,6 +385,63 @@ ul {
 
 .feature-link:hover {
   color: #fff;
+}
+
+/* Feature Popover / Hover Menu Overlay */
+.feature-popover {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 20px 24px;
+  background: rgba(18, 18, 26, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(85, 231, 255, 0.3);
+  border-radius: 0 0 var(--radius) var(--radius);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.feature-card:hover .feature-popover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.feature-popover-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-2);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feature-popover-title::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--accent-2);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-2);
+}
+
+.feature-popover-text {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.5;
 }
 
 /* ===== Vision ===== */
@@ -551,6 +615,7 @@ ul {
 .footer-links {
   display: flex;
   gap: 28px;
+  flex-wrap: wrap;
 }
 
 .footer-links a {
@@ -571,10 +636,6 @@ ul {
 .footer-bottom p {
   font-size: 13px;
   color: var(--text-muted);
-}
-
-.footer-links {
-  flex-wrap: wrap;
 }
 
 .extra-info {
@@ -603,6 +664,10 @@ ul {
   font-size: 16px;
   line-height: 1.8;
   margin-bottom: 18px;
+}
+
+.extra-info-copy p:empty {
+  display: none;
 }
 
 /* ===== Staff + Auth ===== */
@@ -639,7 +704,7 @@ a.staff-card:hover {
   padding: 4px 10px;
   border-radius: 999px;
   margin-bottom: 14px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
 }
 
@@ -691,14 +756,14 @@ a.staff-card:hover {
 }
 
 .modal-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 28%), var(--bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 28%), var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 24px;
   padding: 32px;
   width: 100%;
   max-width: 440px;
   position: relative;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(125,140,255,0.08);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(125, 140, 255, 0.08);
 }
 
 .modal-close {
@@ -708,16 +773,17 @@ a.staff-card:hover {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
 }
+
 .modal-close:hover {
   color: var(--text);
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 #authForm {
@@ -822,6 +888,17 @@ a.staff-card:hover {
   border-bottom: 1px solid var(--border);
 }
 
+.accounts-table th {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.accounts-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .role-select {
   background: var(--bg);
   color: var(--text);
@@ -835,7 +912,7 @@ a.staff-card:hover {
   align-items: center;
   gap: 8px;
   padding: 7px 14px 7px 7px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--text);
@@ -847,8 +924,8 @@ a.staff-card:hover {
 }
 
 .account-btn:hover {
-  border-color: rgba(125,140,255,0.45);
-  background: rgba(125,140,255,0.08);
+  border-color: rgba(125, 140, 255, 0.45);
+  background: rgba(125, 140, 255, 0.08);
 }
 
 .account-btn-icon {
@@ -919,7 +996,7 @@ a.staff-card:hover {
   background: transparent;
   color: var(--text-muted);
   padding: 10px 8px;
-  border-radius: 9px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
   font-family: inherit;
@@ -928,7 +1005,7 @@ a.staff-card:hover {
 .auth-tab.active {
   background: var(--bg-card);
   color: var(--text);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 #authForm label {
@@ -961,14 +1038,13 @@ a.staff-card:hover {
 }
 
 #authSignedIn .role-badge {
-  margin-top: 10px;
+  margin: 12px auto 0;
 }
 
 #authSignOutLink {
   margin-top: 22px;
   color: var(--text-muted);
 }
-
 
 .dev-tab {
   font-weight: 700;
@@ -984,13 +1060,11 @@ a.staff-card:hover {
   background: rgba(85, 231, 255, 0.12);
 }
 
-
 .nav-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 
 .donate-btn {
   font-weight: 700;
@@ -1001,8 +1075,10 @@ a.staff-card:hover {
   background: linear-gradient(135deg, #d476ff, #7d8cff);
   border: none;
 }
-.donate-btn:hover { opacity: 0.92; }
 
+.donate-btn:hover {
+  opacity: 0.92;
+}
 
 .field-label {
   display: block;
@@ -1056,23 +1132,4 @@ a.staff-card:hover {
 
 .auth-signout {
   width: 100%;
-}
-
-#authSignedIn .role-badge {
-  margin: 12px auto 0;
-}
-
-.accounts-table th {
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.accounts-table tbody tr:hover td {
-  background: rgba(255,255,255,0.02);
-}
-
-.extra-info-copy p:empty {
-  display: none;
 }
