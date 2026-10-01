@@ -327,6 +327,177 @@ ul {
   color: var(--accent-2);
 }
 
+/* ==========================================================================
+   Features Section & Hover Dropdown Popovers
+   ========================================================================== */
+
+/* Section Layout */
+.features {
+  padding: 80px 0;
+}
+
+.section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 64px;
+}
+
+.section-header h2 {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.section-header p {
+  font-size: 18px;
+  color: var(--text-muted, #a0a0b0);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+/* Feature Card Container */
+.feature-card {
+  position: relative;
+  background: var(--bg-card, #16161f);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius, 16px);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(85, 231, 255, 0.35);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.feature-card h3 {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text, #f0f0f5);
+  margin-bottom: 8px;
+}
+
+.feature-card > p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted, #a0a0b0);
+  margin-bottom: 16px;
+}
+
+/* Category Badge */
+.role-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+/* Hover Dropdown Wrapper */
+.feature-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+/* Hover Trigger Area */
+.feature-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-2, #55e7ff);
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 12px;
+  margin: -8px -12px;
+  border-radius: var(--radius-sm, 10px);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.feature-card:hover .feature-dropdown-trigger {
+  color: #ffffff;
+}
+
+.dropdown-icon {
+  transition: transform 0.3s ease;
+  color: var(--accent-2, #55e7ff);
+}
+
+.feature-dropdown:hover .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* Floating Popover Overlay (Hovers Over Content Below) */
+.feature-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: -12px;
+  right: -12px;
+  background: var(--bg-elevated, #12121c);
+  border: 1px solid rgba(85, 231, 255, 0.3);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+  z-index: 90;
+  padding: 10px;
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.25s;
+}
+
+/* Show Floating Menu on Hover */
+.feature-dropdown:hover .feature-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.feature-dropdown-menu li a {
+  display: block;
+  padding: 10px 14px;
+  color: var(--text-muted, #a0a0b0);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.feature-dropdown-menu li a:hover {
+  background: rgba(85, 231, 255, 0.12);
+  color: #ffffff;
+  padding-left: 18px;
+}
+
+/* Mobile Responsive Grid */
+@media (max-width: 900px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Actual Dropdown Popover Menu */
 .feature-dropdown-menu {
   position: absolute;
