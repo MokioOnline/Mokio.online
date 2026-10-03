@@ -99,15 +99,10 @@ ul {
 
 
 .container {
-
   width: 100%;
-
   max-width: 1120px;
-
   margin: 0 auto;
-
   padding: 0 24px;
-
 }
 
 
@@ -595,17 +590,11 @@ ul {
 
 
 .feature-card {
-
   background: var(--bg-card);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius);
-
   padding: 36px;
-
   transition: border-color 0.2s, transform 0.2s;
-
 }
 
 
@@ -618,7 +607,14 @@ ul {
 
 }
 
-
+.feature-card-middle {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+  transition: border-color 0.2s, transform 0.2s;
+  margin: 0 275px;
+}
 
 .feature-icon {
 
@@ -1021,175 +1017,108 @@ ul {
 
 
 .waitlist-card {
-
   background: var(--bg-card);
-
   border: 1px solid var(--border);
-
   border-radius: 24px;
-
   padding: 56px 48px;
-
   text-align: center;
-
   max-width: 640px;
-
   margin: 0 auto;
-
   position: relative;
-
   overflow: hidden;
-
 }
 
 
 
 .waitlist-card::before {
-
   content: '';
-
   position: absolute;
-
   top: 0;
-
   left: 0;
-
   right: 0;
-
   height: 3px;
-
   background: var(--accent-gradient);
-
 }
 
 
 
 .waitlist-card h2 {
-
   font-family: var(--font-display);
-
   font-size: 32px;
-
   font-weight: 700;
-
   margin-bottom: 12px;
-
   letter-spacing: -0.02em;
-
 }
 
 
 
 .waitlist-card > p {
-
   color: var(--text-muted);
-
   margin-bottom: 36px;
-
   font-size: 16px;
-
 }
 
 
 
 .waitlist-form .form-row {
-
   display: flex;
-
   gap: 12px;
-
   max-width: 440px;
-
   margin: 0 auto 16px;
-
 }
 
 
 
 .waitlist-form input {
-
   flex: 1;
-
   padding: 14px 20px;
-
   background: var(--bg);
-
   border: 1px solid var(--border);
-
   border-radius: 999px;
-
   color: var(--text);
-
   font-size: 15px;
-
   font-family: inherit;
-
   outline: none;
-
   transition: border-color 0.2s;
-
 }
 
-
-
 .waitlist-form input:focus {
-
   border-color: var(--accent);
-
 }
 
 
 
 .waitlist-form input::placeholder {
-
   color: var(--text-muted);
+}
 
+.waitlist-right {
+  margin-left: 70%;
 }
 
 
 
 .form-note {
-
   font-size: 13px;
-
   color: var(--text-muted);
-
 }
-
-
 
 .success-message {
-
   padding: 20px 0;
-
 }
 
-
-
 .success-icon {
-
   width: 56px;
-
   height: 56px;
-
   background: rgba(34, 197, 94, 0.15);
-
   color: #22c55e;
-
   border-radius: 50%;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   font-size: 28px;
-
   font-weight: 700;
-
   margin: 0 auto 20px;
-
 }
 
 

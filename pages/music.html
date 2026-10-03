@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mokio Wave — More Information</title>
+  <title>Mokio Wave</title>
   <meta name="description" content="Learn more about Mokio Wave: discovery, creation tools, social listening, and playlists.">
   <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,23 +12,27 @@
   <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-  <header class="nav">
+ <header class="nav">
     <div class="container nav-inner">
       <a href="../index.html" class="logo">
         <img src="../images/logo.svg" alt="Mokio" class="logo-img">
         <span class="logo-text">Mokio</span>
       </a>
       <nav class="nav-links">
-        <a href="../index.html">Home</a>
-        <a href="../index.html#features">Apps</a>
-        <a href="messaging.html">Messaging</a>
+        <a href="../index.html#features">Features</a>
+        <a href="../index.html#vision">Vision</a>
         <a href="../index.html#waitlist" class="btn btn-small">Join Waitlist</a>
       </nav>
       <div class="nav-right">
+        <a href="https://www.paypal.com/donate/?hosted_button_id=9AZPTK7UAUQBL" class="donate-btn" target="_blank" rel="noopener">Donate</a>
         <button type="button" class="account-btn" id="accountBtn">
           <span class="account-btn-icon">M</span>
           <span id="accountBtnText">Sign In</span>
         </button>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="pages/portal.html" class="dev-tab" id="staffNavLink" hidden>Portal</a>
       </div>
     </div>
   </header>
@@ -42,7 +46,7 @@
       </p>
       <div class="hero-actions">
         <a href="../index.html#waitlist" class="btn btn-primary">Join the Waitlist</a>
-        <a href="../index.html" class="btn btn-secondary">Back to homepage</a>
+        <a href="messaging.html" class="btn btn-secondary">Check out Arc</a>
       </div>
     </div>
   </section>
@@ -53,12 +57,31 @@
         <h2>What’s in Mokio Wave</h2>
         <p>More detail on the tools and features that sit behind the homepage card.</p>
       </div>
+
       <div class="features-grid">
-        <div class="feature-card">
-          <div class="role-badge" style="background: rgba(125, 140, 255, 0.18); color: #a8b4ff;">Create</div>
+        <div class="feature-card" tabindex="0">
+          <div class="role-badge" style="background: rgba(85, 231, 255, 0.15); color: #55e7ff;">Chat</div>
           <h3>Creator-friendly tools</h3>
           <p>Editing software is part of the app, not a separate product. Make tracks, trim, arrange, and share without leaving Mokio.</p>
+          <div class="popover-menu">
+            <div class="popover-header">
+              <span class="popover-title">Chat Specs</span>
+              <span class="popover-tag">v1.1</span>
+            </div>
+            <ul class="popover-list">
+              <li>---</li>
+              <li>---</li>
+              <li>---</li>
+              <li>---</li>
+            </ul>
+            <div class="popover-actions">
+              <a class="popover-action-btn popover-btn-primary" href="../index.html#waitlist">Join waitlist</a>
+              <a class="popover-action-btn popover-btn-secondary" href="#more-info">More information</a>
+            </div>
+          </div>
         </div>
+
+      </div>
         <div class="feature-card">
           <div class="role-badge" style="background: rgba(125, 140, 255, 0.18); color: #a8b4ff;">Listen together</div>
           <h3>Social listening</h3>
