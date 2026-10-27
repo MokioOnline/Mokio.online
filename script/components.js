@@ -24,7 +24,7 @@
         </div>
       <h1>Accounts Closed</h1>  
       <h4>Waitlist has closed due to legal reasons</h4>
-      <p>ETA 10/32/26</p>
+      <p>ETA 01/01/27</p>
       </div>
 
       <div id="authSignedIn" hidden>
